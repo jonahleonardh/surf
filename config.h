@@ -6,6 +6,8 @@ static char *styledir       = "~/.surf/styles/";
 static char *certdir        = "~/.surf/certificates/";
 static char *cachedir       = "~/.surf/cache/";
 static char *cookiefile     = "~/.surf/cookies.txt";
+static char *dldir	    = "~/downloads/";
+static char *dlstatus	    = "~/.surf/dlstatus/";
 static char *searchurl      = "duckduckgo.com/?q=%s";
 static char **plugindirs    = (char*[]){
 	"~/.surf/plugins/",
@@ -92,13 +94,12 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
 	} \
 }
 
-/* DOWNLOAD(URI, referer) */
-#define DOWNLOAD(u, r) { \
+#define DLSTATUS { \
         .v = (const char *[]){ "st", "-e", "/bin/sh", "-c",\
-             "curl -g -L -J -O -A \"$1\" -b \"$2\" -c \"$2\"" \
-             " -e \"$3\" \"$4\"; read", \
-             "surf-download", useragent, cookiefile, r, u, NULL \
-        } \
+		"while true; do cat $1/* 2>/dev/null || echo \"no hay descargas\";"\
+		"A=; read A; "\
+		"if [ $A = \"clean\" ]; then rm $1/*; fi; clear; done",\
+		"surf-dlstatus", dlstatus, NULL } \
 }
 
 /* PLUMB(URI) */
@@ -175,17 +176,19 @@ static Key keys[] = {
 	/* vertical and horizontal scrolling, in viewport percentage */
 	{ MODKEY,                GDK_KEY_j,      scrollv,    { .i = +10 } },
 	{ MODKEY,                GDK_KEY_k,      scrollv,    { .i = -10 } },
-	{ MODKEY,                GDK_KEY_space,  scrollv,    { .i = +50 } },
-	{ MODKEY,                GDK_KEY_b,      scrollv,    { .i = -50 } },
+//	{ MODKEY,                GDK_KEY_space,  scrollv,    { .i = +50 } },
+//	{ MODKEY,                GDK_KEY_b,      scrollv,    { .i = -50 } },
+	{ MODKEY,		 GDK_KEY_j,	 scrollv,    { .i = +50 } },
+	{ MODKEY,		 GDK_KEY_k,	 scrollv,    { .i = -50 } },
 	{ MODKEY,                GDK_KEY_i,      scrollh,    { .i = +10 } },
 	{ MODKEY,                GDK_KEY_u,      scrollh,    { .i = -10 } },
 
 
-	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_j,      zoom,       { .i = -1 } },
-	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_k,      zoom,       { .i = +1 } },
+//	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_j,      zoom,       { .i = -1 } },
+//	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_k,      zoom,       { .i = +1 } },
 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_q,      zoom,       { .i = 0  } },
 	{ MODKEY,                GDK_KEY_minus,  zoom,       { .i = -1 } },
-	{ MODKEY,                GDK_KEY_plus,   zoom,       { .i = +1 } },
+	{ MODKEY,                GDK_KEY_equal,  zoom,       { .i = +1 } },
 
 	{ MODKEY,                GDK_KEY_p,      clipboard,  { .i = 1 } },
 	{ MODKEY,                GDK_KEY_y,      clipboard,  { .i = 0 } },
@@ -209,6 +212,9 @@ static Key keys[] = {
 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_b,      toggle,     { .i = ScrollBars } },
 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_t,      toggle,     { .i = StrictTLS } },
 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_m,      toggle,     { .i = Style } },
+
+	/* download-console */
+	{ MODKEY,		 GDK_KEY_d,	 spawndls,   { 0 } },
 };
 
 /* button definitions */
@@ -222,3 +228,5 @@ static Button buttons[] = {
 	{ OnAny,        0,              9,      clicknavigate,  { .i = +1 },    1 },
 	{ OnMedia,      MODKEY,         1,      clickexternplayer, { 0 },       1 },
 };
+
+#define HOMEPAGE "file:///home/jonah/documents/browserhome/index.html"
