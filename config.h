@@ -57,6 +57,7 @@ static Parameter defconfig[ParameterLast] = {
 	[Style]               =       { { .i = 1 },     },
 	[WebGL]               =       { { .i = 0 },     },
 	[ZoomLevel]           =       { { .f = 1.0 },   },
+	[ClipboardNotPrimary] =       { { .i = 1 },     },
 };
 
 static UriParameters uriparams[] = {
@@ -164,7 +165,7 @@ static Key keys[] = {
 	{ MODKEY,		 GDK_KEY_s,	 spawn,      SEARCH() },
 	{ MODKEY,                GDK_KEY_m,      spawn,      BM_ADD("_SURF_URI") },
 
-	{ 0,                     GDK_KEY_Escape, stop,       { 0 } },
+	{ 0,                     GDK_KEY_F12,    stop,       { 0 } },
 	{ MODKEY,                GDK_KEY_c,      stop,       { 0 } },
 
 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_r,      reload,     { .i = 1 } },
